@@ -1,68 +1,50 @@
 # AGENTS.md
 
-Instructions for AI agents working in this repository.
+Engineering rules and architecture map for AI agents working in this repo.
 
-## Project intent
+## Scope & Guardrails
 
-Build a **commercial-style frontend demo** for exploring Hong Kong mortgage scenarios through a spatial (3D) dashboard: connect MetaMask on Sepolia, pick a Hong Kong region, inspect demo market signals, and open a mortgage application flow.
-
-This is a **frontend-first UI prototype and testnet simulation**, not a production lending product. Never add real underwriting, KYC/AML, collateral enforcement, fund transfer, or live market data. All figures and loan outcomes are illustrative. No backend, API keys, or deployed contract are needed to run the demo.
-
-## Roadmap (source of truth: `PLAN.md`)
-
-- **Phase 1 — Cyber HUD Shell & Sepolia Wallet Integration (current):** landing/dashboard split, wallet onboarding, KPI/3D/market/mortgage sections, procedural Hong Kong model. Consider this largely delivered.
-- **Phase 2 — Interactive Region Cards & Bank-Grade Mortgage Flow (next):** region intelligence card and a bank-style mortgage application drawer with form fields, repayment calculator, and simulated contract submission. The existing `MarketIntelligenceCard` is static demo data and `MortgageDrawer` is a UI shell only. Keep submission simulated; do not deploy or wire the Solidity contract unless explicitly asked.
-- **Phase 3 — Blender MCP 3D Terrain & Architecture Upgrade (LOCKED — DO NOT START):** terrain and landmark modeling, export and replacement of the procedural map. Do not begin Blender work without an explicit unlock from the user.
+- **Frontend-only testnet demo**: Commercial-style Hong Kong spatial (3D) mortgage dashboard. No backend server, no API keys/env secrets, and no live smart-contract wiring. All financial figures, AI risk scores, and loan outcomes are deterministic/simulated.
+- **Current Focus (`PLAN.md` Phase 2)**: Upgrade `MarketIntelligenceCard` with dynamic regional analytics/pros & cons, and build out `MortgageDrawer` with interactive inputs (property value, LTV down payment, monthly income, tenor), real-time monthly repayment/DSR calculations, and a **frontend-simulated** on-chain submission receipt.
+- **Locked Boundaries**:
+  - **Phase 3 (Blender MCP)**: LOCKED. Keep the 3D map procedural (`Three.js` / `R3F`). Do not invoke Blender or generate `.glb` assets unless explicitly unlocked.
+  - **Smart Contract**: `contracts/SpatialMortgage.sol` is an unwired reference artifact. Do not deploy it or run Hardhat/Foundry setups during Phase 2 (see `docs/CONTRACT_NOTES.md`).
 
 ## Commands
 
-- `npm install`
-- `npm run dev` — Vite dev server (Node 20.19+ or 22.12+)
-- `npm run build` — emits `dist/` via Vite (does not type-check); a Three.js chunk-size warning is expected and non-blocking
-- `npx tsc -b` — type-check; `tsconfig.app.json` enables strict unused locals/parameters, so remove unused imports and props
-- `npm run lint` is not configured in `package.json`; do not assume it exists
+- `npm run dev` — Start Vite dev server (Node 20.19+ or 22.12+)
+- `npx tsc -b` — Strict type-check (`tsconfig.app.json` fails on unused locals/parameters)
+- `npm run build` — Production bundle to `dist/` (runs Vite build only; **does not type-check**; Three.js chunk warning is expected)
+- *Note*: `npm run lint` is not configured; do not run it.
 
-## Architecture
+## Architecture Map
 
-- `index.html` → `src/main.tsx` is the canonical entry. It mounts `StrictMode → Web3Provider → App` and imports `src/styles/globals.css`.
-- `src/app/App.tsx` — `BrowserRouter`, routes `/` (landing), `/dashboard`, unknown → `/`; reads wallet errors via `useWeb3()`.
-- `src/app/pages/` — `LandingPage.tsx`, `DashboardPage.tsx` (owns `selectedRegion` and `drawerOpen` state).
-- `src/components/dashboard/` — KPI, region control, market intelligence, mortgage action cards.
-- `src/components/map/` — R3F canvas, procedural landmass, region meshes, region metadata.
-- `src/components/mortgage/MortgageDrawer.tsx` — right-side drawer shell; Phase 2 target.
-- `src/components/web3/` — connect-wallet and borrow buttons; borrow enabled only when connected on Sepolia.
-- `src/context/Web3Context.tsx` — MetaMask detection, account request, Sepolia validation/switch, balances, `accountsChanged`/`chainChanged` handling, shared error state. `useWeb3()` throws outside `Web3Provider`.
-- `constants.ts` at repo root holds Sepolia constants; `src/lib/constants.ts` re-exports them for `src/**` imports.
-- `contracts/SpatialMortgage.sol` — testnet-only application registry simulation; **not deployed and not wired to the UI**. Read `docs/CONTRACT_NOTES.md` before integrating.
+- `index.html` → `src/main.tsx` — Canonical entry (`StrictMode` → `Web3Provider` → `App` + `src/styles/globals.css`).
+- `src/app/App.tsx` — `BrowserRouter` (`/` landing, `/dashboard`, fallback → `/`); mounts global `ErrorBanner` via `useWeb3()`.
+- `src/app/pages/DashboardPage.tsx` — Owns `selectedRegion` and `drawerOpen` state.
+- `src/components/map/` — R3F canvas, procedural landmasses/towers, and `regionData.ts` (fixed keys: `hong-kong-island`, `kowloon`, `new-territories`).
+- `src/components/dashboard/` — KPI strip, region selector, `MarketIntelligenceCard`, and mortgage trigger cards.
+- `src/components/mortgage/MortgageDrawer.tsx` — Right-side drawer shell (primary Phase 2 target).
+- `src/components/web3/` — Wallet connect & borrow triggers (borrow active only when connected to Sepolia `11155111` / `0xaa36a7`).
+- `src/context/Web3Context.tsx` — `ethers` v6 MetaMask state, Sepolia chain enforcement, and shared error state.
+- `src/lib/constants.ts` — Re-exports Sepolia constants from root `constants.ts`.
 
-## Conventions and constraints
+## Conventions & Known Traps
 
-- Stack: React 19, TypeScript, Vite 8, Tailwind CSS 4 via `@tailwindcss/vite`, React Router 7 (declarative `BrowserRouter`), React Three Fiber 9 + drei + three, framer-motion, lucide-react, ethers v6. Use Context7 for up-to-date library/API docs rather than guessing.
-- Styling: dark glass/aurora theme in `src/styles/globals.css`, which starts with `@import "tailwindcss";`. Reuse existing class names (`glass-card`, `glass-soft`, `section-eyebrow`, `app-bg`, `aurora`) before adding new CSS.
-- Region keys are fixed: `hong-kong-island`, `kowloon`, `new-territories` (`src/components/map/regionData.ts`). Keep them consistent across the region control, 3D scene, and market card.
-- 3D map stays procedural and lightweight in Phase 1: polygon landmasses and extruded towers, stylized placement, no GIS-accurate boundaries and no Blender assets until Phase 3.
-- Wallet errors surface through `ErrorBanner`, not the console. Network target is Sepolia, chain ID `11155111` / `0xaa36a7`.
-- Keep the product framing: structured commercial fintech dashboard, not a debug overlay. See `docs/UI_STATES.md`.
+- **Stack**: React 19, TypeScript, Vite 8, Tailwind CSS 4 (`@tailwindcss/vite`), React Router 7, R3F 9 + drei, `framer-motion`, `lucide-react`, `ethers` v6. Do not install extra npm packages without explicit user approval.
+- **Styling**: Reuse dark glass/aurora classes in `src/styles/globals.css` (`glass-card`, `glass-soft`, `section-eyebrow`, `app-bg`, `aurora`) before writing custom CSS.
+- **Error Handling**: Surface all wallet/form errors via `ErrorBanner` or inline UI alerts, never silent `console.error`.
+- **Traps to Avoid**:
+  - Ignore intentionally empty placeholder files under `src/`.
+  - Keep `Web3Provider` wrapping `App` in `src/main.tsx` (calling `useWeb3()` outside causes a white screen).
 
 ## Verification
 
-- After structural changes, run `npx tsc -b` and `npm run build`.
-- Smoke-check the dev server with `npm run dev -- --port 5199`, then confirm `/` and `/src/main.tsx` return HTTP 200.
-- Wallet errors must surface in `ErrorBanner`, not the console.
+Before concluding any task, run:
+1. `npx tsc -b` — Must pass with 0 errors.
+2. `npm run build` — Must complete cleanly.
+3. Smoke-check routes (`/` and `/dashboard`) and verify no console/runtime white screens when switching regions or opening `MortgageDrawer`.
 
-## Known traps
+## Reference Docs
 
-- No root-level `main.tsx` exists; `index.html` references `src/main.tsx` only — keep it that way.
-- Several empty placeholder files under `src/` are intentionally unused; do not treat them as required exports.
-- `useWeb3()` without a `Web3Provider` ancestor white-screens the app; keep the provider in `src/main.tsx`.
-- Missing `index.html`, an empty entry file, or undeclared runtime dependencies have caused white screens before. See `.planning/debug/resolved/` and `docs/WHITE_SCREEN_FIX_HANDOFF.md` for past investigations.
-
-## Documentation
-
-- `README.md` — product overview, quick start, tech stack, roadmap, limitations
-- `PLAN.md` — phased roadmap and locked phase
-- `docs/WEB3.md` — wallet/network contract
-- `docs/REGION_DATA.md` — spatial model strategy and region layout
-- `docs/UI_STATES.md` — expected wallet and region UI states
-- `docs/CONTRACT_NOTES.md` — smart-contract scope and integration checklist
-- `docs/WHITE_SCREEN_FIX_HANDOFF.md` — prior white-screen investigation notes
+`PLAN.md` | `docs/WEB3.md` | `docs/REGION_DATA.md` | `docs/UI_STATES.md` | `docs/CONTRACT_NOTES.md`
