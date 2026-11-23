@@ -29,16 +29,18 @@ body {
   box-sizing: border-box;
 }
 
-button,
-input,
-select,
-textarea {
-  font: inherit;
-}
+@layer base {
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
 
-a {
-  color: inherit;
-  text-decoration: none;
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 }
 
 .mono {
