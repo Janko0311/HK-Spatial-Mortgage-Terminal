@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { BrowserProvider, ethers } from 'ethers'
+import { BrowserProvider, ethers, type JsonRpcSigner } from 'ethers'
 import {
   SEPOLIA_CHAIN_ID_HEX,
   SEPOLIA_NETWORK_PARAMS,
@@ -17,6 +17,7 @@ type Web3State = {
   isConnected: boolean
   isConnecting: boolean
   provider: BrowserProvider | null
+  signer: JsonRpcSigner | null
   error: Web3Error | null
   connectWallet: () => Promise<void>
   clearError: () => void
@@ -29,6 +30,7 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
   const [balance, setBalance] = useState<string | null>(null)
   const [chainId, setChainId] = useState<string | null>(null)
   const [provider, setProvider] = useState<BrowserProvider | null>(null)
+  const [signer, setSigner] = useState<JsonRpcSigner | null>(null)
   const [isConnecting, setIsConnecting] = useState(false)
   const [error, setError] = useState<Web3Error | null>(null)
 
@@ -148,6 +150,27 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
     }
   }, [readWalletState])
 
+  useEffect(() => {
+    if (!provider) {
+      setSigner(null)
+      return
+    }
+
+    let cancelled = false
+    provider
+      .getSigner()
+      .then((nextSigner) => {
+        if (!cancelled) setSigner(nextSigner)
+      })
+      .catch(() => {
+        if (!cancelled) setSigner(null)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [provider])
+
   const value = useMemo(
     () => ({
       address,
@@ -156,11 +179,12 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
       isConnected: Boolean(address && chainId === SEPOLIA_CHAIN_ID_HEX),
       isConnecting,
       provider,
+      signer,
       error,
       connectWallet,
       clearError,
     }),
-    [address, balance, chainId, isConnecting, provider, error, connectWallet]
+    [address, balance, chainId, isConnecting, provider, signer, error, connectWallet]
   )
 
   return <Web3Context.Provider value={value}>{children}</Web3Context.Provider>

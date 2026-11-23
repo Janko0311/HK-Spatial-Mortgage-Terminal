@@ -4,11 +4,11 @@ Engineering rules and architecture map for AI agents working in this repo.
 
 ## Scope & Guardrails
 
-- **Frontend-only testnet demo**: Commercial-style Hong Kong spatial (3D) mortgage dashboard. No backend server, no API keys/env secrets, and no live smart-contract wiring. All financial figures, AI risk scores, and loan outcomes are deterministic/simulated.
-- **Current Focus (`PLAN.md` Phase 2)**: Upgrade `MarketIntelligenceCard` with dynamic regional analytics/pros & cons, and build out `MortgageDrawer` with interactive inputs (property value, LTV down payment, monthly income, tenor), real-time monthly repayment/DSR calculations, and a **frontend-simulated** on-chain submission receipt.
+- **Frontend-only testnet demo**: Commercial-style Hong Kong spatial (3D) mortgage dashboard. No backend server and no API keys/env secrets. The only chain interaction is browser-signed Sepolia demo calls. All financial figures, AI risk scores, and loan outcomes are simulated.
+- **Current Focus (`PLAN.md` Phase 2)**: Upgrade `MarketIntelligenceCard` with dynamic regional analytics/pros & cons. `MortgageDrawer` now has interactive inputs (free-input loan amount, optional property value/LTV, monthly income, tenor), real-time repayment/DSR calculations, and an on-chain Sepolia submission receipt.
 - **Locked Boundaries**:
   - **Phase 3 (Blender MCP)**: LOCKED. Keep the 3D map procedural (`Three.js` / `R3F`). Do not invoke Blender or generate `.glb` assets unless explicitly unlocked.
-  - **Smart Contract**: `contracts/SpatialMortgage.sol` is an unwired reference artifact. Do not deploy it or run Hardhat/Foundry setups during Phase 2 (see `docs/CONTRACT_NOTES.md`).
+  - **Smart Contract (UNLOCKED by user in Phase 2)**: `contracts/SpatialMortgage.sol` is deployed from the browser at `/deploy` via MetaMask, with no private key in the repo. Do not introduce Hardhat/Foundry or env secrets. See `docs/CONTRACT_NOTES.md`.
 
 ## Commands
 
@@ -20,14 +20,17 @@ Engineering rules and architecture map for AI agents working in this repo.
 ## Architecture Map
 
 - `index.html` → `src/main.tsx` — Canonical entry (`StrictMode` → `Web3Provider` → `App` + `src/styles/globals.css`).
-- `src/app/App.tsx` — `BrowserRouter` (`/` landing, `/dashboard`, fallback → `/`); mounts global `ErrorBanner` via `useWeb3()`.
+- `src/app/App.tsx` — `BrowserRouter` (`/` landing, `/dashboard`, `/deploy`, fallback → `/`); mounts global `ErrorBanner` via `useWeb3()`.
 - `src/app/pages/DashboardPage.tsx` — Owns `selectedRegion` and `drawerOpen` state.
 - `src/components/map/` — R3F canvas, procedural landmasses/towers, and `regionData.ts` (fixed keys: `hong-kong-island`, `kowloon`, `new-territories`).
 - `src/components/dashboard/` — KPI strip, region selector, `MarketIntelligenceCard`, and mortgage trigger cards.
-- `src/components/mortgage/MortgageDrawer.tsx` — Right-side drawer shell (primary Phase 2 target).
-- `src/components/web3/` — Wallet connect & borrow triggers (borrow active only when connected to Sepolia `11155111` / `0xaa36a7`).
-- `src/context/Web3Context.tsx` — `ethers` v6 MetaMask state, Sepolia chain enforcement, and shared error state.
+- `src/components/mortgage/MortgageDrawer.tsx` — Right-side drawer with free-input loan, live repayment/DSR, and `submitApplication` receipt.
+- `src/components/web3/` — Wallet connect & borrow triggers, plus `ContractDeployer.tsx` for browser deployment at `/deploy`.
+- `src/app/pages/DeployPage.tsx` — Route wrapper for `ContractDeployer`.
+- `src/context/Web3Context.tsx` — `ethers` v6 MetaMask state, Sepolia chain enforcement, `provider`/`signer`, and shared error state.
+- `src/lib/contract.ts` — Generated ABI + creation bytecode, stored-address helpers, region→enum map.
 - `src/lib/constants.ts` — Re-exports Sepolia constants from root `constants.ts`.
+- `src/vite-env.d.ts` — Declares `window.ethereum` for MetaMask.
 
 ## Conventions & Known Traps
 

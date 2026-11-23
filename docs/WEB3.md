@@ -23,6 +23,14 @@
 - Provider unavailable
 - Balance read failure
 
+## Contract Flow
+- `/deploy` uses `ContractFactory` with bundled bytecode; MetaMask signs, no private key in repo
+- Deployed address is stored in `localStorage` (`aura.spatialMortgage.address`)
+- `Web3Context` exposes `provider` and `signer` for contract calls
+- The mortgage drawer calls `submitApplication(region, propertyValue, downPaymentPercent, monthlyIncome, tenorYears, requestedLoan)`
+- Application IDs are read from the `ApplicationSubmitted` event in the receipt
+- The receipt shows gas spent in SEP alongside the recorded loan amount
+
 ## ethers v6 Reminder
 Use:
 - `new ethers.BrowserProvider(window.ethereum)`

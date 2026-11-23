@@ -17,7 +17,8 @@
 ## Phase 2: Interactive Region Cards & Bank-Grade Mortgage Flow
 
 - [ ] **2.1 Region Intelligence Card**
-- [ ] **2.2 Bank-Style Mortgage Application Drawer/Modal**
+- [x] **2.2 Bank-Style Mortgage Application Drawer/Modal** (customizable free-input loan, live repayment/DSR, on-chain receipt)
+- [x] **2.3 Sepolia Contract Deployment** (browser deploy via MetaMask, no secrets; user-authorized override of the previous locked boundary)
 
 ---
 

@@ -1,4 +1,4 @@
-import { BarChart3, Building2, Home, Map, Wallet } from 'lucide-react'
+import { BarChart3, Building2, Home, Map, Rocket, Wallet } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 
 const items = [
@@ -47,6 +47,20 @@ export function Sidebar() {
             </Link>
           )
         })}
+      </div>
+
+      <div className="mt-4">
+        <Link
+          to="/deploy"
+          className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-sm transition ${
+            location.pathname === '/deploy'
+              ? 'bg-sky-400/12 text-white shadow-[inset_0_0_0_1px_rgba(56,189,248,0.18)]'
+              : 'text-slate-300 hover:bg-white/5 hover:text-white'
+          }`}
+        >
+          <Rocket className="h-4 w-4" />
+          Deploy
+        </Link>
       </div>
 
       <div className="mt-8 rounded-[24px] border border-white/8 bg-white/5 p-4">

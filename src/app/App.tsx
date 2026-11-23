@@ -3,12 +3,14 @@ import { useWeb3 } from '../context/Web3Context'
 import { ErrorBanner } from '../components/hud/ErrorBanner'
 import { LandingPage } from './pages/LandingPage'
 import { DashboardPage } from './pages/DashboardPage'
+import { DeployPage } from './pages/DeployPage'
 
 function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/dashboard" element={<DashboardPage />} />
+      <Route path="/deploy" element={<DeployPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )

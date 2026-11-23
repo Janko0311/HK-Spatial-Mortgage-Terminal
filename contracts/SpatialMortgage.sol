@@ -90,8 +90,10 @@ contract SpatialMortgage {
 
     /**
      * @notice Submit a new mortgage application.
-     * @dev For simplicity, requestedLoanHKD is passed from frontend.
-     *      In a stricter contract, you could compute it from propertyValue and down payment.
+     * @dev requestedLoanHKD is a free-form demo input supplied by the frontend. It is
+     *      deliberately NOT derived from propertyValueHKD or the down payment, so a tiny
+     *      Sepolia gas spend can record an arbitrarily large (or small) simulated loan.
+     *      propertyValueHKD is optional context and may be 0.
      */
     function submitApplication(
         Region region,
@@ -101,7 +103,6 @@ contract SpatialMortgage {
         uint256 tenorYears,
         uint256 requestedLoanHKD
     ) external returns (uint256 appId) {
-        require(propertyValueHKD > 0, "Property value must be > 0");
         require(downPaymentPercent <= 100, "Down payment percent invalid");
         require(monthlyIncomeHKD > 0, "Monthly income must be > 0");
         require(tenorYears > 0, "Tenor must be > 0");

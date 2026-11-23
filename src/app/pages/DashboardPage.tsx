@@ -80,7 +80,11 @@ export function DashboardPage() {
         </div>
       </div>
 
-      <MortgageDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
+      <MortgageDrawer
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        selectedRegion={selectedRegion}
+      />
     </div>
   )
 }
