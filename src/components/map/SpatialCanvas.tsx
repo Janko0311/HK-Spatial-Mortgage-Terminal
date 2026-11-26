@@ -10,8 +10,13 @@ type Props = {
 
 export function SpatialCanvas({ selectedRegion, onSelectRegion }: Props) {
   return (
-    <div className="canvas-frame grid-overlay">
-      <Canvas camera={{ position: [0, 9, 12], fov: 38 }} shadows dpr={[1, 1.5]}>
+    <div className="canvas-frame grid-overlay flex-1">
+      <Canvas
+        style={{ width: '100%', height: '100%' }}
+        camera={{ position: [0, 9, 12], fov: 38 }}
+        shadows
+        dpr={[1, 1.5]}
+      >
         <color attach="background" args={['#050814']} />
         <fog attach="fog" args={['#050814', 12, 32]} />
 

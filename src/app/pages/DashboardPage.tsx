@@ -28,7 +28,7 @@ export function DashboardPage() {
               onSelect={setSelectedRegion}
             />
 
-            <div className="glass-card rounded-[32px] p-4">
+            <div className="glass-card flex flex-col rounded-[32px] p-4">
               <div className="mb-4 flex items-center justify-between px-2">
                 <div>
                   <div className="section-eyebrow">Spatial Platform</div>
