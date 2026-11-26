@@ -5,7 +5,7 @@ const items = [
   { label: 'Landing', icon: Home, href: '/' },
   { label: 'Dashboard', icon: BarChart3, href: '/dashboard' },
   { label: 'Spatial', icon: Map, href: '/spatial' },
-  { label: 'Mortgage', icon: Building2, href: '/dashboard' },
+  { label: 'Mortgage', icon: Building2, href: '/dashboard?tab=mortgage' },
 ]
 
 export function Sidebar() {
@@ -30,7 +30,14 @@ export function Sidebar() {
       <div className="mt-8 space-y-2">
         {items.map((item) => {
           const Icon = item.icon
-          const active = location.pathname === item.href
+          const [path, query = ''] = item.href.split('?')
+          const params = new URLSearchParams(query)
+          const active =
+            item.label === 'Mortgage'
+              ? location.pathname === path && location.search === `?${query}`
+              : item.label === 'Dashboard'
+                ? location.pathname === path && location.search !== '?tab=mortgage'
+                : location.pathname === path && params.size === 0
 
           return (
             <Link

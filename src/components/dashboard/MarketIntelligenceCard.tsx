@@ -1,43 +1,27 @@
 import { BarChart3 } from 'lucide-react'
-import type { RegionKey } from '../map/regionData'
+import { REGION_MARKET_DATA, type RegionKey } from '../map/regionData'
 
 type Props = {
   selectedRegion: RegionKey | null
 }
 
 export function MarketIntelligenceCard({ selectedRegion }: Props) {
-  const data =
-    selectedRegion === 'hong-kong-island'
-      ? {
-          title: 'Hong Kong Island',
-          avg: 'HK$ 18.2M',
-          ltv: '58%',
-          demand: 'High',
-          note: 'Prime district demand remains strongest around the core finance corridor.',
-        }
-      : selectedRegion === 'kowloon'
-      ? {
-          title: 'Kowloon',
-          avg: 'HK$ 11.4M',
-          ltv: '64%',
-          demand: 'High',
-          note: 'Dense urban mix and transport access sustain healthy mortgage demand.',
-        }
-      : selectedRegion === 'new-territories'
-      ? {
-          title: 'New Territories',
-          avg: 'HK$ 8.9M',
-          ltv: '69%',
-          demand: 'Moderate',
-          note: 'Wider supply and newer development areas support stronger affordability.',
-        }
-      : {
-          title: 'Market Intelligence',
-          avg: 'HK$ --',
-          ltv: '--',
-          demand: '--',
-          note: 'Select a region to inspect pricing, indicative LTV, and demand signals.',
-        }
+  const region = selectedRegion ? REGION_MARKET_DATA[selectedRegion] : null
+  const data = region
+    ? {
+        title: region.title,
+        avg: region.estUnit,
+        ltv: region.ltv,
+        demand: region.demand,
+        note: region.note,
+      }
+    : {
+        title: 'Market Intelligence',
+        avg: 'HK$ --',
+        ltv: '--',
+        demand: '--',
+        note: 'Select a region to inspect pricing, indicative LTV, and demand signals.',
+      }
 
   return (
     <div className="glass-soft rounded-[32px] p-5">
