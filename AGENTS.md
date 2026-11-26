@@ -5,10 +5,10 @@ Engineering rules and architecture map for AI agents working in this repo.
 ## Scope & Guardrails
 
 - **Frontend-only testnet demo**: Commercial-style Hong Kong spatial (3D) mortgage dashboard. No backend server and no API keys/env secrets. The only chain interaction is browser-signed Sepolia demo calls. All financial figures, AI risk scores, and loan outcomes are simulated.
-- **Current Focus (`PLAN.md` Phase 2)**: Upgrade `MarketIntelligenceCard` with dynamic regional analytics/pros & cons. `MortgageDrawer` now has interactive inputs (free-input loan amount, optional property value/LTV, monthly income, tenor), real-time repayment/DSR calculations, and an on-chain Sepolia submission receipt.
-- **Locked Boundaries**:
-  - **Phase 3 (Blender MCP)**: LOCKED. Keep the 3D map procedural (`Three.js` / `R3F`). Do not invoke Blender or generate `.glb` assets unless explicitly unlocked.
-  - **Smart Contract (UNLOCKED by user in Phase 2)**: `contracts/SpatialMortgage.sol` is deployed from the browser at `/deploy` via MetaMask, with no private key in the repo. Do not introduce Hardhat/Foundry or env secrets. See `docs/CONTRACT_NOTES.md`.
+- **Phase 2**: Upgrade `MarketIntelligenceCard` with dynamic regional analytics/pros & cons. `MortgageDrawer` now has interactive inputs (free-input loan amount, optional property value/LTV, monthly income, tenor), real-time repayment/DSR calculations, and an on-chain Sepolia submission receipt.
+- **Current focus**:
+  - **Phase 3 (Blender MCP)**: This is rendered when the user press spatial on the nav bar(on left hand side)
+  - **Smart Contract**: DO NOT modify any code in smart contract. You are only allowed to create/modify the markdown file in `docs/CONTRACT_NOTES.md`.
 
 ## Commands
 

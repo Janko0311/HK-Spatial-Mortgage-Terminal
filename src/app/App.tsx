@@ -4,12 +4,14 @@ import { ErrorBanner } from '../components/hud/ErrorBanner'
 import { LandingPage } from './pages/LandingPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { DeployPage } from './pages/DeployPage'
+import { SpatialPage } from './pages/SpatialPage'
 
 function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/dashboard" element={<DashboardPage />} />
+      <Route path="/spatial" element={<SpatialPage />} />
       <Route path="/deploy" element={<DeployPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

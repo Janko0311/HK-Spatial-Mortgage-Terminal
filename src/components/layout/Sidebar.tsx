@@ -4,7 +4,7 @@ import { Link, useLocation } from 'react-router-dom'
 const items = [
   { label: 'Landing', icon: Home, href: '/' },
   { label: 'Dashboard', icon: BarChart3, href: '/dashboard' },
-  { label: 'Spatial', icon: Map, href: '/dashboard' },
+  { label: 'Spatial', icon: Map, href: '/spatial' },
   { label: 'Mortgage', icon: Building2, href: '/dashboard' },
 ]
 
